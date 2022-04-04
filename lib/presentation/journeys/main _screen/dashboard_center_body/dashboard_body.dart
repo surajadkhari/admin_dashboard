@@ -1,11 +1,13 @@
 import 'package:f_dashboard/core/const/appbar_const.dart';
+import 'package:f_dashboard/data/model/recent_files.dart';
+import 'package:f_dashboard/presentation/journeys/main%20_screen/dashboard_center_body/file%20section/file_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'chart.dart';
 import 'dashboard_body_header.dart';
+import 'storage/storage.dart';
 
 class DashboardBody extends StatelessWidget {
-  DashboardBody({Key? key}) : super(key: key);
+  const DashboardBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,78 +21,60 @@ class DashboardBody extends StatelessWidget {
             const SideBarHeader(),
             const SizedBox(height: 16),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                     flex: 5,
-                    child: Container(
-                      height: 500,
-                      color: Colors.white,
-                    )),
-                const SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 500,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppbarConst.secondaryColor),
                     child: Column(
                       children: [
-                        const Text(
-                          "Storage Detail",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 18),
-                        ),
-                        Chart(),
+                        const FileSection(),
                         const SizedBox(
                           height: 16,
                         ),
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: AppbarConst.primaryColor.withOpacity(0.15),
-                              width: 2,
-                            ),
-                          ),
-                          child: Row(
+                              color: AppbarConst.secondaryColor,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: SvgPicture.asset(
-                                    "assets/icons/Documents.svg"),
+                              Text(
+                                "Recent Files",
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
-                              Expanded(
-                                  child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children:const [
-                                     Text("Document Files"),
-                                     Text('1329 Files')
-                                  ],
-                                ),
-                              )),
-                              const Text("1.3 Gb")
+                              SizedBox(
+                                  width: double.infinity,
+                                  child: DataTable(
+                                    columnSpacing: 16,
+                                    horizontalMargin: 0,
+                                    columns: const [
+                                      DataColumn(
+                                        label: Text('File Name'),
+                                      ),
+                                      DataColumn(
+                                        label: Text('Date'),
+                                      ),
+                                      DataColumn(
+                                        label: Text('Size'),
+                                      ),
+                                    ],
+                                    rows: List.generate(
+                                        demoRecentFiles.length,
+                                        (index) => recentFilesRow(
+                                            demoRecentFiles[index])),
+                                  ))
                             ],
                           ),
                         )
-                        // ListTile(
-                        //   leading: Icon(Icons.menu),
-                        //   title: Text("Document Files"),
-                        //   subtitle: Text("1328 FIles"),
-                        //   trailing: Text("1.5GB"),
-                        // )
                       ],
-                    ),
-                  ),
+                    )),
+                const SizedBox(
+                  width: 16,
+                ),
+                const Expanded(
+                  flex: 2,
+                  child: StorageSection(),
                 ),
               ],
             )
@@ -98,5 +82,27 @@ class DashboardBody extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  DataRow recentFilesRow(RecentFile fileinfo) {
+    return DataRow(cells: [
+      DataCell(
+        Row(
+          children: [
+            SvgPicture.asset(
+              fileinfo.icon.toString(),
+              height: 30,
+              width: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(fileinfo.title.toString()),
+            ),
+          ],
+        ),
+      ),
+      DataCell(Text(fileinfo.date.toString())),
+      DataCell(Text(fileinfo.size.toString().toUpperCase())),
+    ]);
   }
 }

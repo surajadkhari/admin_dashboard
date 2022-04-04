@@ -1,3 +1,4 @@
+import 'package:f_dashboard/core/utilis/responsive.dart';
 import 'package:flutter/material.dart';
 
 import 'dashboard_center_body/dashboard_body.dart';
@@ -13,10 +14,11 @@ class MainScreen extends StatelessWidget {
           child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Expanded(
-            child: SideBarMenu(),
-          ),
-          Expanded(flex: 5, child: DashboardBody())
+          if (Responsive.isDesktop(context))
+            const Expanded(
+              child: SideBarMenu(),
+            ),
+          const Expanded(flex: 5, child: DashboardBody())
         ],
       )),
     );
